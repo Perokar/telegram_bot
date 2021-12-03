@@ -1,0 +1,19 @@
+{
+  "name": "telegrambot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "Alexander Kuzmenko <framin85@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "mongoose": "^6.0.13",
+    "node-cron": "^3.0.0",
+    "node-telegram-bot-api": "^0.18.0",
+    "nodemon": "^2.0.14"
+  },
+  "description": ""
+}
