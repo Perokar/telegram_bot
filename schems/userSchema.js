@@ -1,8 +1,7 @@
-const mainIndex = require('../index');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const cfg = require('../cfg/cfg.js')
-mongoose.connect(cfg.URI , {useUnifiedTopology: true, useNewUrlParser: true});
+const dotenv = require('dotenv').config();
+const conn = mongoose.connect(process.env.URI, {useUnifiedTopology: true, useNewUrlParser: true});
 const userSchema = new Schema ({
     userId: Number,
     userName:String,
