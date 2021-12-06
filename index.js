@@ -4,9 +4,9 @@ const TelegramApi = require('node-telegram-bot-api');
 const {addNewUser,checkUser, clearUser, User} = require('./schems/userSchema');
 const {addPost, clearPost, sendStartPost} = require('./schems/postSchema');
 const {send} = require('./send/send')
-const dotenv = require('dotenv').config('./env')
+require('dotenv').config('')
 const token = process.env.TOKEN;
-console.log(token);
+const uri = process.env.URI;
 const bot = new TelegramApi(token, {polling:true});
 
 bot.on("message",   async (msg, prop)=>{
@@ -37,7 +37,7 @@ bot.on("message",   async (msg, prop)=>{
 
 if (msg.text == "/find") // Добавление в базу
        { 
-         checkUser('day1');
+         checkUser('day0');
        // checkPost();
         //bot.sendMessage(User.userId, "Я токо что добавил Вас в базу данных")
         }
@@ -49,3 +49,4 @@ if (msg.text == "/clean") // Удаление из базы
         } 
 }
 )
+ module.exports =  {uri}
