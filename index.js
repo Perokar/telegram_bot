@@ -6,7 +6,7 @@ const {addPost, clearPost, sendStartPost} = require('./schems/postSchema');
 const {send} = require('./send/send')
 require('dotenv').config('')
 const token = process.env.TOKEN;
-const uri = process.env.URI;
+
 const bot = new TelegramApi(token, {polling:true});
 
 bot.on("message",   async (msg, prop)=>{
@@ -49,4 +49,4 @@ if (msg.text == "/clean") // Удаление из базы
         } 
 }
 )
- module.exports =  {uri}
+
