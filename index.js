@@ -4,13 +4,9 @@ const TelegramApi = require('node-telegram-bot-api');
 const {addNewUser,checkUser, clearUser, User} = require('./schems/userSchema');
 const {addPost, clearPost, sendStartPost} = require('./schems/postSchema');
 const {send} = require('./send/send')
-const dotenv = require('dotenv').config()
-const baseToken = process.env.TOKEN;
-const baseName = process.env.BASENAME;
-const basePass = process.env.BASEPASS;
-const URI= async ()=>{'mongodb+srv://'+baseName+':'+basePass+'@cluster0.cv04m.mongodb.net/telegramUsers?retryWrites=true&w=majority'};
-console.log(URI);
-const token = `${baseToken}`;
+const dotenv = require('dotenv').config('./env')
+const token = process.env.TOKEN;
+console.log(token);
 const bot = new TelegramApi(token, {polling:true});
 
 bot.on("message",   async (msg, prop)=>{
@@ -53,4 +49,3 @@ if (msg.text == "/clean") // Удаление из базы
         } 
 }
 )
-module.exports.URI= URI;
