@@ -3,7 +3,8 @@ const {addNewUser, checkUser, clearUser, User} = require('../schems/userSchema')
 const {Post} = require('../schems/postSchema');
 const TelegramApi = require('node-telegram-bot-api');
 const cron = require('node-cron');
-const token = "2129646778:AAFJOR3iGkmedS6JIpEQmapd1wg3h0deNLg";
+require('dotenv').config('')
+const token = process.env.TOKEN;
 const bot = new TelegramApi(token, {polling:true});
 
 const keyboardOption = {
