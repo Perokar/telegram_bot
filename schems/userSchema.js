@@ -31,6 +31,13 @@ const User = mongoose.model ('user', userSchema);
       });
                  
 }
+async function update (){ 
+    await User.updateMany({status:'day0'},{status:'day1'});
+    await User.updateMany({status:/day1/},{status:'day2'});
+    await User.updateMany({status:/day2/},{status:'day3'});
+    await User.updateMany({status:/day3/},{status:'day7'});
+    console.log('update');
+   }
 
 async function checkUser(userStatus) { //проверка юзера
     console.log(await User.find({status:userStatus}));  
@@ -40,4 +47,4 @@ async function clearUser(){
     await User.deleteMany();
 }
 
-module.exports = {addNewUser, checkUser, clearUser, User}
+module.exports = {addNewUser, checkUser, clearUser, User, update}

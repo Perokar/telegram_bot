@@ -1,4 +1,5 @@
 /node_modules
+./github
 .idea
 .env
 test.js

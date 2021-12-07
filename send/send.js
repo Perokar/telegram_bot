@@ -1,5 +1,5 @@
 
-const {addNewUser, checkUser, clearUser, User} = require('../schems/userSchema');
+const {addNewUser, checkUser, clearUser, User, update} = require('../schems/userSchema');
 const {Post} = require('../schems/postSchema');
 const TelegramApi = require('node-telegram-bot-api');
 const cron = require('node-cron');
@@ -9,17 +9,12 @@ const bot = new TelegramApi(token, {polling:true});
 
 const keyboardOption = {
     reply_markup: JSON.stringify({inline_keyboard:
-        [{text:"Да", callback_data:'yes'},{test:"Нет", callback_data:'no'}]
+        [[{text:"Да", callback_data:'yes'}],[{text:"Нет", callback_data:'no'}]]
     }),
     parse_mode:"Markdown"
 }
-cron.schedule('57 23 * * *',()=>{ //update users
-    User.updateMany({status:/day0/},{status:'day1'});
-    User.updateMany({status:/day1/},{status:'day2'});
-    User.updateMany({status:/day2/},{status:'day3'});
-    User.updateMany({status:/day3/},{status:'day7'});
-   });
-cron.schedule('58 23 * * *', send);
+cron.schedule('55 23 * * *', update, {timezone:"Europe/Kiev"})
+cron.schedule('58 23 * * *', send, {timezone:"Europe/Kiev"});
 async function send(){
     const usersArr = await User.find();
     const postArr = await Post.find();
@@ -74,5 +69,7 @@ if (usersArr){
     }
     else {console.log('no users found')}
 }
-
-module.exports = {send}
+function day7(bot, idUser){
+    bot.sendMessage(idUser, 'some meny text', keyboardOption);
+}
+module.exports = {send, day7}

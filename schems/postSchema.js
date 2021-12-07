@@ -1,8 +1,10 @@
 const mongoose = require('mongoose');
 const cfg = require('../index');
-const Schema = mongoose.Schema;
 require('dotenv').config('')
 const uri = process.env.URI;
+
+const Schema = mongoose.Schema;
+
 mongoose.connect(uri, {useUnifiedTopology: true, useNewUrlParser: true})
 const postSchema = new Schema ({
     datePost: Number,
@@ -194,6 +196,7 @@ async function sendStartPost(){
     const post = await Post.find({datePost:0})
     return post;
 }
+
 
 async function clearPost(){
     await Post.deleteMany();
