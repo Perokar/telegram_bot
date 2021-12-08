@@ -1,9 +1,5 @@
 const mongoose = require('mongoose');
-require('dotenv').config('')
-const uri = process.env.URI;
-
 const Schema = mongoose.Schema;
-const conn = mongoose.connect(uri, {useUnifiedTopology: true, useNewUrlParser: true});
 const userSchema = new Schema ({
     userId: Number,
     userName:String,
@@ -32,10 +28,11 @@ const User = mongoose.model ('user', userSchema);
                  
 }
 async function update (){ 
-    await User.updateMany({status:'day0'},{status:'day1'});
+    //await User.updateMany({status:/day0/},{status:'day1'});
     await User.updateMany({status:/day1/},{status:'day2'});
     await User.updateMany({status:/day2/},{status:'day3'});
     await User.updateMany({status:/day3/},{status:'day7'});
+    await User.updateMany({status:/day7/},{status:'day0'});
     console.log('update');
    }
 

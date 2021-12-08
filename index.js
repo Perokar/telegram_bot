@@ -1,10 +1,14 @@
+require('dotenv').config('')
+const token = process.env.TOKEN;
+const uri = process.env.URI;
+
+const mongoose = require('mongoose');
 const TelegramApi = require('node-telegram-bot-api');
 const { addNewUser, checkUser, clearUser, User, update } = require('./schems/userSchema');
 const { addPost, clearPost, sendStartPost } = require('./schems/postSchema');
 const { send, day7} = require('./send/send')
-require('dotenv').config('')
-const token = process.env.TOKEN;
 
+mongoose.connect(uri, {useUnifiedTopology: true, useNewUrlParser: true})
 const bot = new TelegramApi(token, { polling: true });
 
 const keyboardOption ={
@@ -18,9 +22,6 @@ const keyboardOption ={
       ]
   }
 }
-bot.onText(/\/d7/, (msg,prop)=>{
-  bot.sendMessage(507994212, 'some text', keyboardOption)
-})
 bot.on("message", async (msg, prop) => {
   const id = {
     userId: msg.from.id,
@@ -56,7 +57,7 @@ bot.on("message", async (msg, prop) => {
   if (msg.text == "/clean") // Удаление из базы
   {
     clearPost();
-    clearUser();
+    //clearUser();
     bot.sendMessage(msg.from.id, "База обнулена")
   }
   console.log('msg did not handle');

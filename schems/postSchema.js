@@ -1,11 +1,7 @@
 const mongoose = require('mongoose');
 const cfg = require('../index');
-require('dotenv').config('')
-const uri = process.env.URI;
 
 const Schema = mongoose.Schema;
-
-mongoose.connect(uri, {useUnifiedTopology: true, useNewUrlParser: true})
 const postSchema = new Schema ({
     datePost: Number,
     hour: Number,
