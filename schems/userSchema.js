@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+
 const Schema = mongoose.Schema;
 const userSchema = new Schema ({
     userId: Number,
@@ -7,8 +8,19 @@ const userSchema = new Schema ({
     status: String
 })
 const User = mongoose.model ('user', userSchema);
-
- //запись юзера
+ 
+//update user
+const statysArr = ['day0','day1','day2','day3','day7'];
+async function update (){
+    var i = statysArr.length-1;
+    const dateT = new Date();
+    while (i>=0){
+    const resUpdate = await Person.updateMany({"status":statysArr[i-1]}, { $set:{"status":statysArr[i]}});
+    console.log(dateT);
+    i--;
+    }
+}
+ //user save
  function addNewUser (dataUser){    
     User.findOne({userId: dataUser.userId}, function (err, person) {
         if (err) {
@@ -24,24 +36,19 @@ const User = mongoose.model ('user', userSchema);
           return;
         }
         console.log('User already exists');
-      });
-                 
+      });              
 }
-async function update (){ 
-    //await User.updateMany({status:/day0/},{status:'day1'});
-    await User.updateMany({status:/day1/},{status:'day2'});
-    await User.updateMany({status:/day2/},{status:'day3'});
-    await User.updateMany({status:/day3/},{status:'day7'});
-    await User.updateMany({status:/day7/},{status:'day0'});
-    console.log('update');
-   }
-
+// check user status
 async function checkUser(userStatus) { //проверка юзера
-    console.log(await User.find({status:userStatus}));  
+     const li = await User.find({status:userStatus});  
+}
+// delete all base
+async function clear(model){
+    await model.deleteMany();
+}
+//reset status
+async function resetStatus(){
+   await User.updateMany({status: /./}, {status:"day0"})
 }
 
-async function clearUser(){
-    await User.deleteMany();
-}
-
-module.exports = {addNewUser, checkUser, clearUser, User, update}
+module.exports = {addNewUser, checkUser, clear, User, update, resetStatus}

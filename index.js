@@ -1,33 +1,37 @@
 require('dotenv').config('')
-const token = process.env.TOKEN;
-const uri = process.env.URI;
+const token = process.env.TOKEN 
+const uri =  process.env.URI
+const mongoose = require('mongoose')
 
-const mongoose = require('mongoose');
+//const {createSchedule} = require ('./job/cron-job')
+//const {addNewUser, clear, Person, update, findPerson} = require('./schems/person')
 const TelegramApi = require('node-telegram-bot-api');
-const { addNewUser, checkUser, clearUser, User, update } = require('./schems/userSchema');
-const { addPost, clearPost, sendStartPost } = require('./schems/postSchema');
+const {addNewUser, checkUser, clear, User, update, resetStatus } = require('./schems/userSchema');
+const { addPost, sendStartPost, Post } = require('./schems/postSchema');
 const { send, day7} = require('./send/send')
 
 mongoose.connect(uri, {useUnifiedTopology: true, useNewUrlParser: true})
-const bot = new TelegramApi(token, { polling: true });
+const bot = new TelegramApi(token, {polling: true});
 
-const keyboardOption ={
-  reply_markup: {
-    inline_keyboard:
-      [
-        [
-          { text: "Да", callback_data: '1' },
-          { text: "Нет", callback_data: '0' }
-        ]
-      ]
-  }
-}
-bot.on("message", async (msg, prop) => {
+
+
+bot.on("message", async (msg, option) => {
   const id = {
     userId: msg.from.id,
     userName: msg.from.first_name,
     dateNow: new Date().getDate(),
     status: 'day0'
+  }
+  const keyboardOption ={
+    reply_markup: {
+      inline_keyboard:
+        [
+          [
+            { text: "Да", callback_data: '1' },
+            { text: "Нет", callback_data: '2' }
+          ]
+        ]
+    }
   }
   if (msg.text == '/start') {
     addNewUser(id);
@@ -42,7 +46,7 @@ bot.on("message", async (msg, prop) => {
   }
   if (msg.text == "/test") // поиск
   {
-    bot.sendMessage(msg.from.id, "test ok");
+      //createSchedule(Post);
     //   //bot.sendMessage(msg.from.id, [Піч на колесах \- DXP](https://youtu.be/8Sh2twEoXBY) Domino's Pizza разом з американською інженерною компанією Roush Enterprises побудували спеціальний автомобіль для доставки піци - Delivery ExPert або DXP. Особливість автомобіля в тому, що він обладнаний вбудованою піччю для постійного підігріву піци, тож клієнт завжди отримує піцу ідеальної температури \- 60 градусів\., {parse_mode: 'Markdown', disable_web_page_preview: true})
   }
   if (msg.text == "/add") // поиск
@@ -52,25 +56,23 @@ bot.on("message", async (msg, prop) => {
 
   if (msg.text == "/find") // Добавление в базу
   {
-    checkUser('day1');
+    findPerson('day3');
+  }
+  if (msg.text == "/reset") // Добавление в базу
+  {
+    resetStatus();
   }
   if (msg.text == "/clean") // Удаление из базы
   {
-    clearPost();
-    //clearUser();
-    bot.sendMessage(msg.from.id, "База обнулена")
+    arrModels = [User, Post];
+    arrModels.map(model=>{
+      clear(model);
+    })
+    bot.sendMessage(msg.from.id, "Все базы обнулены")
   }
   console.log('msg did not handle');
 })
-bot.on('callback_query', msg => {
+bot.on('callback_query', (msg) => {
   console.log(msg);
 })
-
-
-bot.on('polling_error', (error) => {
-  console.log(error.code);  // => 'EFATAL'
-});
-bot.on('webhook_error', (err)=>console.log(err));
-bot.on('error', (err)=>console.log(err));
-bot.on('chosen_inline_result', (something)=>console.log('chosen_inline_result'));
-bot.on('inline_query', (something)=>console.log('inline_query'));
+module.exports = {bot}

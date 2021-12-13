@@ -3,17 +3,18 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon index.js",
-    "start": "node index.js"
+    "dev": "nodemon -r dotenv/config index.js",
+    "start": "node -r dotenv/config index.js"
   },
   "keywords": [],
   "author": "Alexander Kuzmenko <framin85@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "cron": "^1.8.2",
     "dotenv": "^10.0.0",
     "mongoose": "^6.0.13",
     "node-cron": "^3.0.0",
-    "node-telegram-bot-api": "^0.18.0",
+    "node-telegram-bot-api": "^0.56.0",
     "nodemon": "^2.0.14"
   },
   "description": ""

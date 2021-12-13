@@ -2,4 +2,4 @@
 ./github
 .idea
 .env
-test.js
+./schems/person.js

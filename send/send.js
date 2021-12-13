@@ -1,11 +1,10 @@
 
-const {addNewUser, checkUser, clearUser, User, update} = require('../schems/userSchema');
+require('dotenv').config('')
+const {User, update} = require('../schems/userSchema');
 const {Post} = require('../schems/postSchema');
 const TelegramApi = require('node-telegram-bot-api');
 const cron = require('node-cron');
-require('dotenv').config('')
-const token = process.env.TOKEN;
-const bot = new TelegramApi(token, {polling:true});
+const {bot}= require('../index')
 
 const keyboardOption = {
     reply_markup: JSON.stringify({inline_keyboard:
@@ -13,8 +12,9 @@ const keyboardOption = {
     }),
     parse_mode:"Markdown"
 }
-cron.schedule('55 23 * * *', update, {timezone:"Europe/Kiev"})
-cron.schedule('58 23 * * *', send, {timezone:"Europe/Kiev"});
+
+const cronUpdate = cron.schedule('55 23 * * *', update, {timezone:"Europe/Kiev"})
+const sendCron = cron.schedule('58 23 * * *', send, {timezone:"Europe/Kiev"});
 async function send(){
     const usersArr = await User.find();
     const postArr = await Post.find();
