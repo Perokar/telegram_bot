@@ -2,13 +2,13 @@ require('dotenv').config('')
 const token = process.env.TOKEN 
 const uri =  process.env.URI
 const mongoose = require('mongoose')
-
+const cronJob = require('cron').CronJob;
 //const {createSchedule} = require ('./job/cron-job')
 //const {addNewUser, clear, Person, update, findPerson} = require('./schems/person')
 const TelegramApi = require('node-telegram-bot-api');
+const cron = require('node-cron');
 const {addNewUser, checkUser, clear, User, update, resetStatus } = require('./schems/userSchema');
 const { addPost, sendStartPost, Post } = require('./schems/postSchema');
-const { send, day7} = require('./send/send')
 
 mongoose.connect(uri, {useUnifiedTopology: true, useNewUrlParser: true})
 const bot = new TelegramApi(token, {polling: true});
@@ -22,17 +22,7 @@ bot.on("message", async (msg, option) => {
     dateNow: new Date().getDate(),
     status: 'day0'
   }
-  const keyboardOption ={
-    reply_markup: {
-      inline_keyboard:
-        [
-          [
-            { text: "Да", callback_data: '1' },
-            { text: "Нет", callback_data: '2' }
-          ]
-        ]
-    }
-  }
+  
   if (msg.text == '/start') {
     addNewUser(id);
     const messageArr = await sendStartPost();
@@ -75,4 +65,96 @@ bot.on("message", async (msg, option) => {
 bot.on('callback_query', (msg) => {
   console.log(msg);
 })
-module.exports = {bot}
+
+/////==================================/////////////////////////////////////
+
+const sendCron = cron.schedule('2 6 * * *', getDen, {timezone:"Europe/Kiev"});
+const cronUpdate = cron.schedule('0 6 * * *', update, {timezone:"Europe/Kiev"});
+cronUpdate.start();
+sendCron.start();
+
+async function getDen(humens, messages, callback){  // download base
+  var baseData = await humens.find({});
+  var postData = await messages.find({})
+  var bot = await bot;
+  callback(baseData,postData)
+}
+getDen(User, Post, sendSchedule)
+
+
+function sendSchedule(usersArr, postArr){ //shedule function
+
+  const keyboardOption ={ // кнопки
+    reply_markup: {
+      inline_keyboard:
+        [
+          [
+            { text: "Да", callback_data: '1' },
+            { text: "Нет", callback_data: '2' }
+          ]
+        ]
+    }
+  }
+
+if (usersArr.length>0){
+      const day1Users = usersArr.filter(user=>user.status === 'day1');
+      const day2Users = usersArr.filter(user=>user.status === 'day2');
+      const day3Users = usersArr.filter(user=>user.status === 'day3');
+      const day7Users = usersArr.filter(user=>user.status === 'day7');
+      
+      if (day1Users.length>0){
+          const day1PostArr = postArr.filter(postage=>postage.datePost == 1 )
+                  day1PostArr.map(msg=>{
+                      day1Users.map(user=>{
+                          const day1 = cron.schedule(`${msg.secund} 0 ${msg.hour} ${user.dateNow+1} * *`,()=>{
+                              bot.sendMessage(user.userId,msg.post , {parse_mode: 'Markdown', disable_web_page_preview: true})
+                          },{timezone:"Europe/Kiev"})
+                          day1.start();  
+                      })
+                  })
+         
+      }
+      if (day2Users.length>0){
+          const day2PostArr = postArr.filter(postage=>postage.datePost == 2 )
+                  day2PostArr.map(msg=>{
+                      day2Users.map(user=>{
+                          const day2 = cron.schedule(`${msg.secund} 0 ${msg.hour} ${user.dateNow+2} * *`,()=>{
+                              bot.sendMessage(user.userId,msg.post , {parse_mode: 'Markdown', disable_web_page_preview: true})
+                          }, {timezone:"Europe/Kiev"})
+                          day2PostArr.start();  
+                      })
+                  })
+         
+      }
+      if (day3Users.length>0){
+          const day3PostArr = postArr.filter(postage=>postage.datePost == 3 )
+                  day3PostArr.map(msg=>{
+                      day3Users.map(user=>{
+                          const day3 = cron.schedule(`${msg.secund} 0 ${msg.hour} ${user.dateNow+3} * *`,()=>{
+                              bot.sendMessage(user.userId,msg.post , {parse_mode: 'Markdown', disable_web_page_preview: true})
+                          },{timezone:"Europe/Kiev"})
+                          day3.start();
+                      })
+                  })
+         
+      }
+      if (day7Users.length>0){
+          try{
+          const day7PostArr = postArr.filter(postage=>postage.datePost == 7 )
+              day7PostArr.map(msg=>{
+                      day7Users.map(user=>{  
+                          const day7 = cron.schedule(`${msg.secund} 0 ${msg.hour} ${user.dateNow+7} * *`,()=>{
+                              bot.sendMessage(user.userId, msg.post, keyboardOption)
+                           }, {timezone:"Europe/Kiev"})
+                           day7.start();
+                      })
+                  })
+              } catch (err){
+                  console.log(err)
+              }
+      }
+  }
+  else {console.log('no users found')}
+}
+
+ 

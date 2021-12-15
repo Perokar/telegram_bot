@@ -13,12 +13,11 @@ const User = mongoose.model ('user', userSchema);
 const statysArr = ['day0','day1','day2','day3','day7'];
 async function update (){
     var i = statysArr.length-1;
-    const dateT = new Date();
     while (i>=0){
-    const resUpdate = await Person.updateMany({"status":statysArr[i-1]}, { $set:{"status":statysArr[i]}});
-    console.log(dateT);
+    const resUpdate = await User.updateMany({"status":statysArr[i-1]}, { $set:{"status":statysArr[i]}});
     i--;
     }
+    
 }
  //user save
  function addNewUser (dataUser){    

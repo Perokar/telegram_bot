@@ -144,7 +144,7 @@ const postsArray = [
     `
 },
 {
-    datePost: 9,
+    datePost: 3,
     hour: 10,
     secund:1,
     post:`Впевнений що у тебе наразі виникають питання ❔, тож  

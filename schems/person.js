@@ -44,8 +44,6 @@ async function update (){
 async function findPerson(statusPer) {
     console.log(Person.find({statusPer}))
 }
-async function clear(model){
-    await model.deleteMany();
-}
+
 
 module.exports = {addNewUser, clear, Person, update, findPerson}
