@@ -192,9 +192,14 @@ async function sendStartPost(){
     const post = await Post.find({datePost:0})
     return post;
 }
-
+async function sendPost(day, bot, id){
+       const choicePost = await Post.find({datePost:day});
+       choicePost.map(objPost=>{
+           bot.sendMessage(id, objPost.post, {parse_mode: 'Markdown', disable_web_page_preview: true})
+       })
+}   
 
 async function clearPost(){
     await Post.deleteMany();
 }
-module.exports = {addPost, clearPost, sendStartPost, Post};
+module.exports = {addPost, clearPost, sendStartPost, sendPost, Post};
