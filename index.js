@@ -8,12 +8,7 @@ const cronJob = require('cron').CronJob;
 const TelegramApi = require('node-telegram-bot-api');
 const cron = require('node-cron');
 const {addNewUser, checkUser, clear, User, update, resetStatus } = require('./schems/userSchema');
-<<<<<<< HEAD
 const { addPost, sendStartPost, Post } = require('./schems/postSchema');
-=======
-const { addPost, sendStartPost, Post, sendPost} = require('./schems/postSchema');
-const { send, day7} = require('./send/send')
->>>>>>> 0d6f16b31ad6620f3fc4d9a1e0201dc8943427f6
 
 mongoose.connect(uri, {useUnifiedTopology: true, useNewUrlParser: true})
 const bot = new TelegramApi(token, {polling: true});
@@ -39,25 +34,6 @@ bot.on("message", async (msg, option) => {
       update();
       
   }
-    if (msg.text=='/day1') {
-        var man = msg.from.id;
-
-        sendPost(1, bot, man);    
-  }
-  if (msg.text=='/day2') {
-    var man = msg.from.id;
-
-    sendPost(2, bot, man);    
-}
-if (msg.text=='/day3') {
-  var man = msg.from.id;
-
-  sendPost(3, bot, man);    
-}
-if (msg.text=='/day7') {
-  var man = msg.from.id;
-  sendPost(3, bot, man);    
-}
   if (msg.text == "/test") // поиск
   {
       //createSchedule(Post);
