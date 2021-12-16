@@ -43,18 +43,13 @@ bot.on("message", async (msg, option) => {
   {
     addPost();
   }
-
-  if (msg.text == "/find") // Добавление в базу
-  {
-    findPerson('day3');
-  }
   if (msg.text == "/reset") // Добавление в базу
   {
     resetStatus();
   }
   if (msg.text == "/clean") // Удаление из базы
   {
-    arrModels = [User, Post];
+    arrModels = [Post];
     arrModels.map(model=>{
       clear(model);
     })
@@ -68,22 +63,19 @@ bot.on('callback_query', (msg) => {
 
 /////==================================/////////////////////////////////////
 
-const sendCron = cron.schedule('2 6 * * *', getDen, {timezone:"Europe/Kiev"});
-const cronUpdate = cron.schedule('0 6 * * *', update, {timezone:"Europe/Kiev"});
+const sendCron = cron.schedule('55 00 * * *', function(){ getDen(User, Post, sendSchedule)}, {timezone:"Europe/Kiev"});
+const cronUpdate = cron.schedule('54  00 * * *', update, {timezone:"Europe/Kiev"});
 cronUpdate.start();
 sendCron.start();
-
+console.log(sendCron.start);
 async function getDen(humens, messages, callback){  // download base
   var baseData = await humens.find({});
   var postData = await messages.find({})
   var bot = await bot;
   callback(baseData,postData)
 }
-getDen(User, Post, sendSchedule)
-
 
 function sendSchedule(usersArr, postArr){ //shedule function
-
   const keyboardOption ={ // кнопки
     reply_markup: {
       inline_keyboard:
@@ -121,7 +113,7 @@ if (usersArr.length>0){
                           const day2 = cron.schedule(`${msg.secund} 0 ${msg.hour} ${user.dateNow+2} * *`,()=>{
                               bot.sendMessage(user.userId,msg.post , {parse_mode: 'Markdown', disable_web_page_preview: true})
                           }, {timezone:"Europe/Kiev"})
-                          day2PostArr.start();  
+                          day2.start();  
                       })
                   })
          
