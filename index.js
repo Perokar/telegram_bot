@@ -45,19 +45,19 @@ bot.on("message", async (msg, option) => {
   }
     if (msg.text == "/day1") // поиск
     {
-      sendPost('day1', bot, msg.from.id)    
+      sendPost(1, bot, msg.from.id)    
     }
     if (msg.text == "/day2") // поиск
     {
-      sendPost('day2', bot, msg.from.id)    
+      sendPost(2, bot, msg.from.id)    
     }
     if (msg.text == "/day3") // поиск
     {
-      sendPost('day3', bot, msg.from.id)    
+      sendPost(3, bot, msg.from.id)    
     }
     if (msg.text == "/day7") // поиск
     {
-      sendPost('day7', bot, msg.from.id)    
+      sendPost(7, bot, msg.from.id)    
     }
   if (msg.text == "/reset") // Добавление в базу
   {
