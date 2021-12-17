@@ -8,7 +8,7 @@ const cronJob = require('cron').CronJob;
 const TelegramApi = require('node-telegram-bot-api');
 const cron = require('node-cron');
 const {addNewUser, checkUser, clear, User, update, resetStatus } = require('./schems/userSchema');
-const { addPost, sendStartPost, Post } = require('./schems/postSchema');
+const { addPost, sendStartPost, Post, sendPost } = require('./schems/postSchema');
 
 mongoose.connect(uri, {useUnifiedTopology: true, useNewUrlParser: true})
 const bot = new TelegramApi(token, {polling: true});
@@ -43,6 +43,22 @@ bot.on("message", async (msg, option) => {
   {
     addPost();
   }
+    if (msg.text == "/day1") // поиск
+    {
+      sendPost('day1', bot, msg.from.id)    
+    }
+    if (msg.text == "/day2") // поиск
+    {
+      sendPost('day2', bot, msg.from.id)    
+    }
+    if (msg.text == "/day3") // поиск
+    {
+      sendPost('day3', bot, msg.from.id)    
+    }
+    if (msg.text == "/day7") // поиск
+    {
+      sendPost('day7', bot, msg.from.id)    
+    }
   if (msg.text == "/reset") // Добавление в базу
   {
     resetStatus();
