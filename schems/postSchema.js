@@ -129,7 +129,7 @@ const postsArray = [
     datePost: 7,
     hour: 9,
     secund:1,
-    post:`"Чи достатьню інформації я тобі надав?
+    post:`Чи достатьню інформації я тобі надав?
     `
 },
 {
@@ -153,10 +153,13 @@ function addPost(){
     })
 })
 }
+
 async function sendStartPost(){
-    const post = await Post.find({datePost:0})
-    return post;
+    for (let tik=0; tik==1; tik++){
+    const post = await Post.find({datePost:0,hour: tik})
+    }
 }
+
 async function sendPost(day, bot, id){
        const choicePost = await Post.find({datePost:day});
        choicePost.map(objPost=>{

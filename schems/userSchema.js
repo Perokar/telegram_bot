@@ -10,7 +10,7 @@ const userSchema = new Schema ({
 const User = mongoose.model ('user', userSchema);
  
 //update user
-const statysArr = ['day0','day1','day2','day3','day7'];
+const statysArr = ['day0','day1','day2','day3', 'day4', 'day5', 'day6', 'day7'];
 async function update (){
     var i = statysArr.length-1;
     while (i>=0){

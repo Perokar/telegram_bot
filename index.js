@@ -9,6 +9,7 @@ const TelegramApi = require('node-telegram-bot-api');
 const cron = require('node-cron');
 const {addNewUser, checkUser, clear, User, update, resetStatus } = require('./schems/userSchema');
 const { addPost, sendStartPost, Post, sendPost } = require('./schems/postSchema');
+const {feedbackUser} = require('./schems/feedbackSchema');
 
 mongoose.connect(uri, {useUnifiedTopology: true, useNewUrlParser: true})
 const bot = new TelegramApi(token, {polling: true});
@@ -27,7 +28,7 @@ bot.on("message", async (msg, option) => {
     addNewUser(id);
     const messageArr = await sendStartPost();
     messageArr.forEach((text) => {
-      bot.sendMessage(msg.from.id, text.post, { parse_mode: 'Markdown', disable_web_page_preview: true });
+      bot.sendMessage(msg.from.id, text.post, {parse_mode: 'Markdown', disable_web_page_preview: true });
     })
   }
   if (msg.text == '/update') {
@@ -57,7 +58,7 @@ bot.on("message", async (msg, option) => {
     }
     if (msg.text == "/day7") // поиск
     {
-      sendPost(7, bot, msg.from.id)    
+      bot.sendMessage(msg.from.id,`Чи достатьню інформації я тобі надав? `,keyboardOption)   
     }
   if (msg.text == "/reset") // Добавление в базу
   {
@@ -73,17 +74,50 @@ bot.on("message", async (msg, option) => {
   }
   console.log('msg did not handle');
 })
-bot.on('callback_query', (msg) => {
-  console.log(msg);
+  const day = await +msg.data;
+  (async function getFDate(){
+    const answer = await Post.findOne({datePost:day})
+    answerPost(answer.post)   
+  }())
+  function answerPost(text){
+    bot.editMessageText(text,{
+      message_id: msg.message.message_id,
+      chat_id: msg.from.id,
+      inline_keyboard:[[ ]]
+    })
+    bot.on('message', async (msg)=>{
+      const answer = {
+        userId: msg.from.id,
+        userName: msg.from.first_name,
+        dateNow: new Date().getDate(),
+        answer: msg.text
+      }
+     await feedbackUser(answer);
+      console.log(answer);
+    })
+  }
 })
 
 /////==================================/////////////////////////////////////
-
+const keyboardOption ={ // кнопки
+  reply_markup: {
+        inline_keyboard:
+      [
+        [
+          { text: "Да", callback_data: 999 },
+          { text: "Нет", callback_data: 998 }
+        ]
+      ],
+    resize_keyboard: true,
+		one_time_keyboard: true,
+  }
+}
 const sendCron = cron.schedule('55 00 * * *', function(){ getDen(User, Post, sendSchedule)}, {timezone:"Europe/Kiev"});
 const cronUpdate = cron.schedule('54  00 * * *', update, {timezone:"Europe/Kiev"});
 cronUpdate.start();
 sendCron.start();
 console.log(sendCron.start);
+
 async function getDen(humens, messages, callback){  // download base
   var baseData = await humens.find({});
   var postData = await messages.find({})
@@ -92,17 +126,6 @@ async function getDen(humens, messages, callback){  // download base
 }
 
 function sendSchedule(usersArr, postArr){ //shedule function
-  const keyboardOption ={ // кнопки
-    reply_markup: {
-      inline_keyboard:
-        [
-          [
-            { text: "Да", callback_data: '1' },
-            { text: "Нет", callback_data: '2' }
-          ]
-        ]
-    }
-  }
 
 if (usersArr.length>0){
       const day1Users = usersArr.filter(user=>user.status === 'day1');
@@ -117,7 +140,7 @@ if (usersArr.length>0){
                           const day1 = cron.schedule(`${msg.secund} 0 ${msg.hour} ${user.dateNow+1} * *`,()=>{
                               bot.sendMessage(user.userId,msg.post , {parse_mode: 'Markdown', disable_web_page_preview: true})
                           },{timezone:"Europe/Kiev"})
-                          day1.start();  
+                          day1.start(); 
                       })
                   })
          
