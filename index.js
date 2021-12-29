@@ -74,6 +74,7 @@ bot.on("message", async (msg, option) => {
   }
   console.log('msg did not handle');
 })
+bot.on('callback_query', async (msg) => { //обработчик колбека
   const day = await +msg.data;
   (async function getFDate(){
     const answer = await Post.findOne({datePost:day})
@@ -92,7 +93,7 @@ bot.on("message", async (msg, option) => {
         dateNow: new Date().getDate(),
         answer: msg.text
       }
-     await feedbackUser(answer);
+      feedbackUser(answer);
       console.log(answer);
     })
   }

@@ -24,6 +24,6 @@ function feedbackUser (dataFeedBack){
           return;
         }
         console.log('feedback  already exists');
-      });              x
+      });              
 }
 module.exports ={feedbackUser}
