@@ -106,6 +106,15 @@ bot.on('callback_query', async(msg) => { //обработчик колбека
             if (callData == 998) {
                 let text = await Post.findOne({ datePost: 1000 })
                 bot.sendMessage(msg.from.id, text.post, { parse_mode: 'Markdown', disable_web_page_preview: true })
+                bot.on('message', async(msg) => {
+                    const answer = {
+                        userId: msg.from.id,
+                        userName: msg.from.first_name,
+                        dateNow: new Date().getDate(),
+                        answer: msg.text
+                    }
+                    feedbackUser(answer)
+                })
                 callData = 1000;
             }
         })
