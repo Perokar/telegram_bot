@@ -27,52 +27,53 @@ bot.on("message", async(msg, option) => {
     if (msg.text == '/start') {
         addNewUser(id);
         const messageArr = await sendStartPost();
-        messageArr.forEach((text) => {
-            bot.sendMessage(msg.from.id, text.post, { parse_mode: 'Markdown', disable_web_page_preview: true });
-        })
+        for (let i = 0; messageArr.length > i; i++) {
+            await bot.sendMessage(msg.from.id, messageArr[i].post, { parse_mode: 'Markdown', disable_web_page_preview: true }).then(() => { sleep(3000) })
+        }
     }
-    if (msg.text == '/update') {
-        update();
+    // if (msg.text == '/update') {
+    //     update();
 
-    }
-    if (msg.text == "/test") // поиск
-    {
-        //createSchedule(Post);
-        //   //bot.sendMessage(msg.from.id, [Піч на колесах \- DXP](https://youtu.be/8Sh2twEoXBY) Domino's Pizza разом з американською інженерною компанією Roush Enterprises побудували спеціальний автомобіль для доставки піци - Delivery ExPert або DXP. Особливість автомобіля в тому, що він обладнаний вбудованою піччю для постійного підігріву піци, тож клієнт завжди отримує піцу ідеальної температури \- 60 градусів\., {parse_mode: 'Markdown', disable_web_page_preview: true})
-    }
-    if (msg.text == "/add") // поиск
-    {
-        addPost();
-    }
-    if (msg.text == "/day1") // поиск
-    {
-        sendPost(1, bot, msg.from.id)
-    }
-    if (msg.text == "/day2") // поиск
-    {
-        sendPost(2, bot, msg.from.id)
-    }
-    if (msg.text == "/day3") // поиск
-    {
-        sendPost(3, bot, msg.from.id)
-    }
+    // }
+    // if (msg.text == "/test") // поиск
+    // {
+    //     //createSchedule(Post);
+    //     //   //bot.sendMessage(msg.from.id, [Піч на колесах \- DXP](https://youtu.be/8Sh2twEoXBY) Domino's Pizza разом з американською інженерною компанією Roush Enterprises побудували спеціальний автомобіль для доставки піци - Delivery ExPert або DXP. Особливість автомобіля в тому, що він обладнаний вбудованою піччю для постійного підігріву піци, тож клієнт завжди отримує піцу ідеальної температури \- 60 градусів\., {parse_mode: 'Markdown', disable_web_page_preview: true})
+    // }
+    // if (msg.text == "/add") // поиск
+    // {
+    //     addPost();
+    // }
+    // if (msg.text == "/day1") // поиск
+    // {
+    //     sendPost(1, bot, msg.from.id)
+    // }
+    // if (msg.text == "/day2") // поиск
+    // {
+    //     sendPost(2, bot, msg.from.id)
+    // }
+    // if (msg.text == "/day3") // поиск
+    // {
+    //     sendPost(3, bot, msg.from.id)
+    // }
     if (msg.text == "/day7") // поиск
     {
+        console.log(1)
         bot.sendMessage(msg.from.id, `Чи достатьню інформації я тобі надав? `, keyboardOption)
     }
-    if (msg.text == "/reset") // Добавление в базу
-    {
-        resetStatus();
-    }
-    if (msg.text == "/clean") // Удаление из базы
-    {
-        arrModels = [Post];
-        arrModels.map(model => {
-            clear(model);
-        })
-        bot.sendMessage(msg.from.id, "Все базы обнулены")
-    }
-    console.log('msg did not handle');
+    // if (msg.text == "/reset") // Добавление в базу
+    // {
+    //     resetStatus();
+    // }
+    // if (msg.text == "/clean") // Удаление из базы
+    // {
+    //     arrModels = [Post];
+    //     arrModels.map(model => {
+    //         clear(model);
+    //     })
+    //     bot.sendMessage(msg.from.id, "Все базы обнулены")
+    // }
+    // console.log('msg did not handle');
 })
 bot.on('callback_query', async(msg) => { //обработчик колбека
     let callData = await + msg.data;
@@ -84,10 +85,10 @@ bot.on('callback_query', async(msg) => { //обработчик колбека
     }
     async function getFDate(day) {
         const answer = await Post.findOne({ datePost: day })
-        answerPost(answer.post)
+        answerPost(answer.post, listen)
     }
 
-    function answerPost(text) {
+    function answerPost(text, listenCallback) {
         bot.editMessageText(text, {
             message_id: msg.message.message_id,
             chat_id: msg.from.id,
@@ -95,6 +96,14 @@ bot.on('callback_query', async(msg) => { //обработчик колбека
                 []
             ]
         })
+        listenCallback()
+    }
+    var z = false;
+    if (z == true) {
+        return
+    }
+
+    function listen() {
         bot.on('message', async(msg) => {
             const answer = {
                 userId: msg.from.id,
@@ -103,19 +112,10 @@ bot.on('callback_query', async(msg) => { //обработчик колбека
                 answer: msg.text
             }
             feedbackUser(answer)
-            if (callData == 998) {
+            if (callData == 998 && z == false) {
                 let text = await Post.findOne({ datePost: 1000 })
                 bot.sendMessage(msg.from.id, text.post, { parse_mode: 'Markdown', disable_web_page_preview: true })
-                bot.on('message', async(msg) => {
-                    const answer = {
-                        userId: msg.from.id,
-                        userName: msg.from.first_name,
-                        dateNow: new Date().getDate(),
-                        answer: msg.text
-                    }
-                    feedbackUser(answer)
-                })
-                callData = 1000;
+                return z = true
             }
         })
     }
@@ -126,8 +126,8 @@ const keyboardOption = { // кнопки
     reply_markup: {
         inline_keyboard: [
             [
-                { text: "Да", callback_data: 999 },
-                { text: "Нет", callback_data: 998 }
+                { text: "Так", callback_data: 999 },
+                { text: "Ні", callback_data: 998 }
             ]
         ],
         resize_keyboard: true,
@@ -207,4 +207,12 @@ function sendSchedule(usersArr, postArr) { //shedule function
             }
         }
     } else { console.log('no users found') }
+}
+
+function sleep(milliseconds) {
+    const date = Date.now();
+    let currentDate = null;
+    do {
+        currentDate = Date.now();
+    } while (currentDate - date < milliseconds);
 }
