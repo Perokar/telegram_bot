@@ -1,29 +1,26 @@
 const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
-const feedSchema = new Schema ({
+const feedSchema = new Schema({
     feedUserId: Number,
-    feedUserName:String,
+    feedUserName: String,
     dateNow: Number,
     answer: String
 })
-const feedBack = mongoose.model ('feedback', feedSchema);
+const feedBack = mongoose.model('feedback', feedSchema);
 
-function feedbackUser (dataFeedBack){    
-    feedBack.findOne({feedUserId: dataFeedBack.userId}, function (err, feed) {
-        if (err) {
-           console.log(err.name);
-           return;
-        }
-        if (!feed){
-            const FeedBack = new feedBack(dataFeedBack);
-            FeedBack.save (function (err){
-                if (err)  console.log(err);
-            })
-          console.log('feedback add to base');
-          return;
-        }
-        console.log('feedback  already exists');
-      });              
+async function feedbackUser(dataFeedBack) {
+    const dataCheck = await feedBack.find({});
+    console.log(dataCheck);
+    if (dataCheck.length > 2) {
+        console.log('feedback exists in the base');
+        return
+    }
+    const FeedBack = new feedBack(dataFeedBack);
+    FeedBack.save(function(err) {
+        if (err) console.log(err);
+    })
+    console.log('feedback add to base');
+    return;
 }
-module.exports ={feedbackUser}
+module.exports = { feedbackUser }

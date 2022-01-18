@@ -56,11 +56,10 @@ bot.on("message", async(msg, option) => {
     // {
     //     sendPost(3, bot, msg.from.id)
     // }
-    if (msg.text == "/day7") // поиск
-    {
-        console.log(1)
-        bot.sendMessage(msg.from.id, `Чи достатьню інформації я тобі надав? `, keyboardOption)
-    }
+    // if (msg.text == "/day7") // поиск
+    // {
+    //     bot.sendMessage(msg.from.id, `Чи достатьню інформації я тобі надав? `, keyboardOption)
+    // }
     // if (msg.text == "/reset") // Добавление в базу
     // {
     //     resetStatus();
@@ -99,9 +98,6 @@ bot.on('callback_query', async(msg) => { //обработчик колбека
         listenCallback()
     }
     var z = false;
-    if (z == true) {
-        return
-    }
 
     function listen() {
         bot.on('message', async(msg) => {
