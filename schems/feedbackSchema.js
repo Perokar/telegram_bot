@@ -4,14 +4,13 @@ const Schema = mongoose.Schema;
 const feedSchema = new Schema({
     feedUserId: Number,
     feedUserName: String,
-    dateNow: Number,
+    dateNow: String,
     answer: String
 })
 const feedBack = mongoose.model('feedback', feedSchema);
 
 async function feedbackUser(dataFeedBack) {
-    const dataCheck = await feedBack.find({});
-    console.log(dataCheck);
+    const dataCheck = await feedBack.find({ feedUserId: dataFeedBack.feedUserId });
     if (dataCheck.length > 2) {
         console.log('feedback exists in the base');
         return
