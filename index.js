@@ -132,8 +132,7 @@ const keyboardOption = { // кнопки
     }
 }
 var jobScheduled = false;
-//const sendCron = cron.schedule('44 18 * * *', function() { getDen(User, Post, sendSchedule) }, { scheduled: true, timezone: "Europe/Kiev" });
-const cronUpdate = cron.schedule('49  17 * * *', update, { scheduled: true, timezone: "Europe/Kiev" });
+const cronUpdate = cron.schedule('50  23 * * *', update, { scheduled: true, timezone: "Europe/Kiev" });
 cron.schedule("* * * * *", () => {
     if (!jobScheduled) {
         console.log('scheduled broken ' + new Date())
@@ -163,10 +162,10 @@ function sendSchedule(usersArr, postArr) { //shedule function
             const day1PostArr = postArr.filter(postage => postage.datePost == 1)
             day1PostArr.map(msg => {
                 day1Users.map(user => {
-                    const day1 = cron.schedule(`${msg.secund} 0 ${msg.hour} ${deltaDate(1,user)} * *`, () => {
+                    cron.schedule(`${msg.secund} 0 ${msg.hour} ${deltaDate(1,user)} * *`, () => {
                         bot.sendMessage(user.userId, msg.post, { parse_mode: 'Markdown', disable_web_page_preview: true })
-                    }, { timezone: "Europe/Kiev" })
-                    day1.start();
+                    }, { scheduled: true, timezone: "Europe/Kiev" })
+
                 })
             })
 
@@ -187,7 +186,7 @@ function sendSchedule(usersArr, postArr) { //shedule function
             const day3PostArr = postArr.filter(postage => postage.datePost == 3)
             day3PostArr.map(msg => {
                 day3Users.map(user => {
-                    const day3 = cron.schedule(`${msg.secund} 0 ${msg.hour} ${deltaDate(2, user)} * *`, () => {
+                    const day3 = cron.schedule(`${msg.secund} 0 ${msg.hour} ${deltaDate(3, user)} * *`, () => {
                         bot.sendMessage(user.userId, msg.post, { parse_mode: 'Markdown', disable_web_page_preview: true })
                     }, { timezone: "Europe/Kiev" })
                     day3.start();
