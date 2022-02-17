@@ -132,7 +132,6 @@ function addPost() {
 
 async function sendStartPost() {
     const post = await Post.find({ datePost: 0 }).sort({ hour: 1 })
-    console.log(post);
     return post;
 }
 

@@ -21,6 +21,7 @@ bot.on("message", async(msg, option) => {
         userId: msg.from.id,
         userName: msg.from.first_name,
         dateNow: new Date().getDate(),
+        timestamp: +new Date(),
         status: 'day0'
     }
 
@@ -130,13 +131,20 @@ const keyboardOption = { // кнопки
         one_time_keyboard: true,
     }
 }
-const sendCron = cron.schedule('55 00 * * *', function() { getDen(User, Post, sendSchedule) }, { timezone: "Europe/Kiev" });
-const cronUpdate = cron.schedule('54  00 * * *', update, { timezone: "Europe/Kiev" });
-cronUpdate.start();
-sendCron.start();
-console.log(sendCron.start);
-
-async function getDen(humens, messages, callback) { // download base
+var jobScheduled = false;
+//const sendCron = cron.schedule('44 18 * * *', function() { getDen(User, Post, sendSchedule) }, { scheduled: true, timezone: "Europe/Kiev" });
+const cronUpdate = cron.schedule('49  17 * * *', update, { scheduled: true, timezone: "Europe/Kiev" });
+cron.schedule("* * * * *", () => {
+    if (!jobScheduled) {
+        console.log('scheduled broken ' + new Date())
+        getDen(User, Post, sendSchedule)
+    } else {
+        console.log('Schedule Ok')
+    }
+}, { scheduled: true, timezone: "Europe/Kiev" })
+async function getDen(humens, messages, callback) {
+    jobScheduled = true;
+    // download base
     var baseData = await humens.find({});
     var postData = await messages.find({})
     var bot = await bot;
@@ -155,7 +163,7 @@ function sendSchedule(usersArr, postArr) { //shedule function
             const day1PostArr = postArr.filter(postage => postage.datePost == 1)
             day1PostArr.map(msg => {
                 day1Users.map(user => {
-                    const day1 = cron.schedule(`${msg.secund} 0 ${msg.hour} ${user.dateNow+1} * *`, () => {
+                    const day1 = cron.schedule(`${msg.secund} 0 ${msg.hour} ${deltaDate(1,user)} * *`, () => {
                         bot.sendMessage(user.userId, msg.post, { parse_mode: 'Markdown', disable_web_page_preview: true })
                     }, { timezone: "Europe/Kiev" })
                     day1.start();
@@ -167,7 +175,7 @@ function sendSchedule(usersArr, postArr) { //shedule function
             const day2PostArr = postArr.filter(postage => postage.datePost == 2)
             day2PostArr.map(msg => {
                 day2Users.map(user => {
-                    const day2 = cron.schedule(`${msg.secund} 0 ${msg.hour} ${user.dateNow+2} * *`, () => {
+                    const day2 = cron.schedule(`${msg.secund} 0 ${msg.hour} ${deltaDate(2, user)} * *`, () => {
                         bot.sendMessage(user.userId, msg.post, { parse_mode: 'Markdown', disable_web_page_preview: true })
                     }, { timezone: "Europe/Kiev" })
                     day2.start();
@@ -179,7 +187,7 @@ function sendSchedule(usersArr, postArr) { //shedule function
             const day3PostArr = postArr.filter(postage => postage.datePost == 3)
             day3PostArr.map(msg => {
                 day3Users.map(user => {
-                    const day3 = cron.schedule(`${msg.secund} 0 ${msg.hour} ${user.dateNow+3} * *`, () => {
+                    const day3 = cron.schedule(`${msg.secund} 0 ${msg.hour} ${deltaDate(2, user)} * *`, () => {
                         bot.sendMessage(user.userId, msg.post, { parse_mode: 'Markdown', disable_web_page_preview: true })
                     }, { timezone: "Europe/Kiev" })
                     day3.start();
@@ -192,7 +200,7 @@ function sendSchedule(usersArr, postArr) { //shedule function
                 const day7PostArr = postArr.filter(postage => postage.datePost == 7)
                 day7PostArr.map(msg => {
                     day7Users.map(user => {
-                        const day7 = cron.schedule(`${msg.secund} 0 ${msg.hour} ${user.dateNow+7} * *`, () => {
+                        const day7 = cron.schedule(`${msg.secund} 0 ${msg.hour} ${deltaDate(7, user)} * *`, () => {
                             bot.sendMessage(user.userId, msg.post, keyboardOption)
                         }, { timezone: "Europe/Kiev" })
                         day7.start();
@@ -211,4 +219,11 @@ function sleep(milliseconds) {
     do {
         currentDate = Date.now();
     } while (currentDate - date < milliseconds);
+}
+
+function deltaDate(plus, user) {
+    var stamp = user.timestamp;
+    let timeStm = stamp + (1000 * 60 * 60 * 24 * plus)
+    let day = new Date(timeStm).getDate()
+    return day
 }
