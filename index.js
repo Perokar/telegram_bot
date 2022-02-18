@@ -29,7 +29,7 @@ bot.on("message", async(msg, option) => {
         addNewUser(id);
         const messageArr = await sendStartPost();
         for (let i = 0; messageArr.length > i; i++) {
-            await bot.sendMessage(msg.from.id, messageArr[i].post, { parse_mode: 'Markdown', disable_web_page_preview: true }).then(() => { sleep(3000) })
+            await bot.sendMessage(msg.from.id, messageArr[i].post, { parse_mode: 'Markdown', disable_web_page_preview: true }).then(() => { sleep(4000) })
         }
     }
     // if (msg.text == '/update') {
@@ -133,16 +133,16 @@ const keyboardOption = { // кнопки
 }
 var jobScheduled = false;
 const cronUpdate = cron.schedule('50  23 * * *', update, { scheduled: true, timezone: "Europe/Kiev" });
-cron.schedule("* * * * *", () => {
+const cronSchedul = cron.schedule('55  23 * * *', getDen(User, Post, sendSchedule), { scheduled: true, timezone: "Europe/Kiev" });
+const controlSchedul = cron.schedule('0 */30 00-04 * * * ', () => {
     if (!jobScheduled) {
-        console.log('scheduled broken ' + new Date())
+        console.log('schedule failed ' + new Date())
         getDen(User, Post, sendSchedule)
     } else {
-        console.log('Schedule Ok')
+        console.log('scheduled OK');
     }
 }, { scheduled: true, timezone: "Europe/Kiev" })
 async function getDen(humens, messages, callback) {
-    jobScheduled = true;
     // download base
     var baseData = await humens.find({});
     var postData = await messages.find({})
@@ -151,7 +151,6 @@ async function getDen(humens, messages, callback) {
 }
 
 function sendSchedule(usersArr, postArr) { //shedule function
-
     if (usersArr.length > 0) {
         const day1Users = usersArr.filter(user => user.status === 'day1');
         const day2Users = usersArr.filter(user => user.status === 'day2');
@@ -159,57 +158,30 @@ function sendSchedule(usersArr, postArr) { //shedule function
         const day7Users = usersArr.filter(user => user.status === 'day7');
 
         if (day1Users.length > 0) {
-            const day1PostArr = postArr.filter(postage => postage.datePost == 1)
-            day1PostArr.map(msg => {
-                day1Users.map(user => {
-                    cron.schedule(`${msg.secund} 0 ${msg.hour} ${deltaDate(1,user)} * *`, () => {
-                        bot.sendMessage(user.userId, msg.post, { parse_mode: 'Markdown', disable_web_page_preview: true })
-                    }, { scheduled: true, timezone: "Europe/Kiev" })
-
-                })
-            })
-
+            sendSchedulMessage(1, day1Users, postArr)
         }
         if (day2Users.length > 0) {
-            const day2PostArr = postArr.filter(postage => postage.datePost == 2)
-            day2PostArr.map(msg => {
-                day2Users.map(user => {
-                    const day2 = cron.schedule(`${msg.secund} 0 ${msg.hour} ${deltaDate(2, user)} * *`, () => {
-                        bot.sendMessage(user.userId, msg.post, { parse_mode: 'Markdown', disable_web_page_preview: true })
-                    }, { timezone: "Europe/Kiev" })
-                    day2.start();
-                })
-            })
-
+            sendSchedulMessage(2, day2Users, postArr)
         }
         if (day3Users.length > 0) {
-            const day3PostArr = postArr.filter(postage => postage.datePost == 3)
-            day3PostArr.map(msg => {
-                day3Users.map(user => {
-                    const day3 = cron.schedule(`${msg.secund} 0 ${msg.hour} ${deltaDate(3, user)} * *`, () => {
-                        bot.sendMessage(user.userId, msg.post, { parse_mode: 'Markdown', disable_web_page_preview: true })
-                    }, { timezone: "Europe/Kiev" })
-                    day3.start();
-                })
-            })
-
+            sendSchedulMessage(3, day3Users, postArr)
         }
         if (day7Users.length > 0) {
-            try {
-                const day7PostArr = postArr.filter(postage => postage.datePost == 7)
-                day7PostArr.map(msg => {
-                    day7Users.map(user => {
-                        const day7 = cron.schedule(`${msg.secund} 0 ${msg.hour} ${deltaDate(7, user)} * *`, () => {
-                            bot.sendMessage(user.userId, msg.post, keyboardOption)
-                        }, { timezone: "Europe/Kiev" })
-                        day7.start();
-                    })
-                })
-            } catch (err) {
-                console.log(err)
-            }
+            sendSchedulMessage(7, day7Users, postArr)
         }
     } else { console.log('no users found') }
+    jobScheduled = true;
+}
+
+function sendSchedulMessage(dayIndex, usersArr, postArray) {
+    const PostArr = postArray.filter(postage => postage.datePost == dayIndex)
+    PostArr.map(msg => {
+        usersArr.map(user => {
+            cron.schedule(`${msg.secund} 0 ${msg.hour} ${deltaDate(dayIndex, user)} * *`, () => {
+                bot.sendMessage(user.userId, msg.post, { parse_mode: 'Markdown', disable_web_page_preview: true })
+            }, { scheduled: true, timezone: "Europe/Kiev" })
+        })
+    })
 }
 
 function sleep(milliseconds) {
