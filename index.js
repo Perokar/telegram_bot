@@ -134,14 +134,7 @@ const keyboardOption = { // кнопки
 var jobScheduled = false;
 const cronUpdate = cron.schedule('50  23 * * *', update, { scheduled: true, timezone: "Europe/Kiev" });
 const cronSchedul = cron.schedule('55  23 * * *', function() { getDen(User, Post, sendSchedule) }, { scheduled: true, timezone: "Europe/Kiev" });
-const controlSchedul = cron.schedule('0 */30 00-04 * * * ', () => {
-    if (!jobScheduled) {
-        console.log('schedule failed ' + new Date())
-        getDen(User, Post, sendSchedule)
-    } else {
-        console.log('scheduled OK');
-    }
-}, { scheduled: true, timezone: "Europe/Kiev" })
+
 async function getDen(humens, messages, callback) {
     // download base
     var baseData = await humens.find({});
